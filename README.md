@@ -60,7 +60,7 @@ go build -o nordlys-installer ./cmd/nordlys-installer
 go test ./...
 ```
 
-Go 1.22+. Linux, macOS, Windows (amd64, arm64).
+Go 1.26+. Linux, macOS, Windows (amd64, arm64).
 
 ## Links
 
