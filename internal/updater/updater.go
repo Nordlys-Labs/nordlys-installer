@@ -142,29 +142,31 @@ func (u *Updater) SelfUpdate() error {
 	}
 
 	_, err = io.Copy(f, resp.Body)
-	f.Close()
+	if closeErr := f.Close(); err == nil {
+		err = closeErr
+	}
 	if err != nil {
-		os.Remove(tmpFile)
+		_ = os.Remove(tmpFile)
 		return err
 	}
 
 	if err := os.Chmod(tmpFile, 0o755); err != nil {
-		os.Remove(tmpFile)
+		_ = os.Remove(tmpFile)
 		return err
 	}
 
 	backupPath := execPath + ".old"
 	if err := os.Rename(execPath, backupPath); err != nil {
-		os.Remove(tmpFile)
+		_ = os.Remove(tmpFile)
 		return err
 	}
 
 	if err := os.Rename(tmpFile, execPath); err != nil {
-		os.Rename(backupPath, execPath)
+		_ = os.Rename(backupPath, execPath)
 		return err
 	}
 
-	os.Remove(backupPath)
+	_ = os.Remove(backupPath)
 
 	fmt.Printf("Updated to version %s\n", latestVersion)
 	return nil

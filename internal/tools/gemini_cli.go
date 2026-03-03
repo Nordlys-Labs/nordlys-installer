@@ -102,7 +102,9 @@ func (g *GeminiCLI) UpdateConfig(apiKey, model, baseURL string) error {
 	}
 
 	// Validate against schema
-	ValidateConfig(GeminiCLISchemaURL, geminiConfig)
+	if err := ValidateConfig(GeminiCLISchemaURL, geminiConfig); err != nil {
+		return err
+	}
 
 	// Convert to map for merging
 	updates := structToMap(geminiConfig)
@@ -186,7 +188,7 @@ func (g *GeminiCLI) Uninstall() error {
 
 	// Remove .env file
 	envPath := filepath.Join(filepath.Dir(path), ".env")
-	os.Remove(envPath)
+	_ = os.Remove(envPath)
 
 	return config.WriteJSONFile(path, data)
 }

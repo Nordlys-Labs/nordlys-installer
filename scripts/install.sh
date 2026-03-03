@@ -5,9 +5,9 @@ VERSION="${NORDLYS_INSTALLER_VERSION:-latest}"
 REPO="nordlys-labs/nordlys-installer"
 INSTALL_DIR="${NORDLYS_INSTALL_DIR:-/usr/local/bin}"
 
-log_info() { echo "🔹 $*"; }
-log_success() { echo "✅ $*"; }
-log_error() { echo "❌ $*" >&2; }
+log_info() { echo "  $*"; }
+log_success() { echo "  $*"; }
+log_error() { echo "Error: $*" >&2; }
 
 detect_platform() {
 	OS=$(uname -s | tr '[:upper:]' '[:lower:]')
@@ -71,7 +71,7 @@ main() {
 	echo ""
 	log_success "Installation complete!"
 	echo ""
-	echo "🚀 Get started:"
+	echo "Get started:"
 	echo "   nordlys-installer              # Interactive mode"
 	echo "   nordlys-installer list         # List supported tools"
 	echo "   nordlys-installer --help       # View all options"

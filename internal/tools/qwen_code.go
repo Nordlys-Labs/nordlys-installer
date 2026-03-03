@@ -150,7 +150,7 @@ func (q *QwenCode) Uninstall() error {
 
 	// Remove .env file
 	envPath := filepath.Join(filepath.Dir(path), ".env")
-	os.Remove(envPath)
+	_ = os.Remove(envPath)
 
 	return config.WriteJSONFile(path, data)
 }

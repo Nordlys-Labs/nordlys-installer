@@ -29,16 +29,16 @@ echo
 # Build the binary
 echo "Building nordlys-installer..."
 go build -o nordlys-installer ./cmd/nordlys-installer
-echo -e "${GREEN}✓${NC} Build successful"
+echo -e "${GREEN}PASS${NC} Build successful"
 echo
 
 # Test 1: Version command
 echo "Test 1: Version command"
 VERSION_OUTPUT=$(./nordlys-installer version)
 if [[ "$VERSION_OUTPUT" == *"v1.0.0"* ]]; then
-    echo -e "${GREEN}✓${NC} Version command works"
+    echo -e "${GREEN}PASS${NC} Version command works"
 else
-    echo -e "${RED}✗${NC} Version command failed"
+    echo -e "${RED}FAIL${NC} Version command failed"
     exit 1
 fi
 echo
@@ -47,9 +47,9 @@ echo
 echo "Test 2: List command"
 LIST_OUTPUT=$(./nordlys-installer list)
 if [[ "$LIST_OUTPUT" == *"claude-code"* ]] && [[ "$LIST_OUTPUT" == *"opencode"* ]]; then
-    echo -e "${GREEN}✓${NC} List command works"
+    echo -e "${GREEN}PASS${NC} List command works"
 else
-    echo -e "${RED}✗${NC} List command failed"
+    echo -e "${RED}FAIL${NC} List command failed"
     exit 1
 fi
 echo
@@ -58,9 +58,9 @@ echo
 echo "Test 3: Help command"
 HELP_OUTPUT=$(./nordlys-installer --help)
 if [[ "$HELP_OUTPUT" == *"Nordlys Installer"* ]]; then
-    echo -e "${GREEN}✓${NC} Help command works"
+    echo -e "${GREEN}PASS${NC} Help command works"
 else
-    echo -e "${RED}✗${NC} Help command failed"
+    echo -e "${RED}FAIL${NC} Help command failed"
     exit 1
 fi
 echo
@@ -74,9 +74,9 @@ echo '{"existingKey": "preserve-this"}' > "$TEST_HOME/.claude/settings.json"
 # For now, let's verify the binary runs with proper flags
 ./nordlys-installer --non-interactive --help > /dev/null 2>&1
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✓${NC} Non-interactive flag accepted"
+    echo -e "${GREEN}PASS${NC} Non-interactive flag accepted"
 else
-    echo -e "${RED}✗${NC} Non-interactive flag failed"
+    echo -e "${RED}FAIL${NC} Non-interactive flag failed"
     exit 1
 fi
 echo
@@ -85,9 +85,9 @@ echo
 echo "Test 5: Validate command (no API key)"
 VALIDATE_OUTPUT=$(./nordlys-installer validate 2>&1 || true)
 if [[ "$VALIDATE_OUTPUT" == *"NORDLYS_API_KEY"* ]] || [[ "$VALIDATE_OUTPUT" == *"not set"* ]]; then
-    echo -e "${GREEN}✓${NC} Validate command detects missing API key"
+    echo -e "${GREEN}PASS${NC} Validate command detects missing API key"
 else
-    echo -e "${RED}✗${NC} Validate command unexpected output"
+    echo -e "${RED}FAIL${NC} Validate command unexpected output"
     exit 1
 fi
 echo
@@ -96,9 +96,9 @@ echo
 echo "Test 6: Update command check"
 UPDATE_OUTPUT=$(./nordlys-installer update 2>&1 || true)
 if [[ "$UPDATE_OUTPUT" == *"failed to check"* ]] || [[ "$UPDATE_OUTPUT" == *"already"* ]] || [[ "$UPDATE_OUTPUT" == *"version"* ]]; then
-    echo -e "${GREEN}✓${NC} Update command runs (network error expected)"
+    echo -e "${GREEN}PASS${NC} Update command runs (network error expected)"
 else
-    echo -e "${YELLOW}⚠${NC} Update command output: $UPDATE_OUTPUT"
+    echo -e "${YELLOW}NOTE${NC} Update command output: $UPDATE_OUTPUT"
 fi
 echo
 
@@ -106,9 +106,9 @@ echo
 echo "Test 7: Uninstall command"
 UNINSTALL_HELP=$(./nordlys-installer uninstall --help)
 if [[ "$UNINSTALL_HELP" == *"Remove Nordlys"* ]]; then
-    echo -e "${GREEN}✓${NC} Uninstall command help works"
+    echo -e "${GREEN}PASS${NC} Uninstall command help works"
 else
-    echo -e "${RED}✗${NC} Uninstall command help failed"
+    echo -e "${RED}FAIL${NC} Uninstall command help failed"
     exit 1
 fi
 echo
@@ -117,11 +117,11 @@ echo
 echo "Test 8: Running Go tests"
 go test ./... -v 2>&1 | grep -E "^(ok|FAIL)" > /tmp/test-output.txt
 if grep -q "FAIL" /tmp/test-output.txt; then
-    echo -e "${RED}✗${NC} Go tests failed"
+    echo -e "${RED}FAIL${NC} Go tests failed"
     cat /tmp/test-output.txt
     exit 1
 else
-    echo -e "${GREEN}✓${NC} All Go tests pass"
+    echo -e "${GREEN}PASS${NC} All Go tests pass"
     # Count test packages
     TEST_COUNT=$(grep -c "^ok" /tmp/test-output.txt)
     echo -e "     Tested $TEST_COUNT packages"
@@ -132,9 +132,9 @@ echo
 echo "Test 9: Code quality checks"
 go vet ./... > /dev/null 2>&1
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✓${NC} go vet passed"
+    echo -e "${GREEN}PASS${NC} go vet passed"
 else
-    echo -e "${RED}✗${NC} go vet failed"
+    echo -e "${RED}FAIL${NC} go vet failed"
     exit 1
 fi
 echo
@@ -145,9 +145,9 @@ go test -coverprofile=coverage.txt ./... > /dev/null 2>&1
 COVERAGE=$(go tool cover -func=coverage.txt | grep total | awk '{print $3}' | sed 's/%//')
 COVERAGE_INT=${COVERAGE%.*}
 if [ "$COVERAGE_INT" -ge 70 ]; then
-    echo -e "${GREEN}✓${NC} Test coverage is ${COVERAGE}% (>= 70%)"
+    echo -e "${GREEN}PASS${NC} Test coverage is ${COVERAGE}% (>= 70%)"
 else
-    echo -e "${RED}✗${NC} Test coverage is ${COVERAGE}% (< 70%)"
+    echo -e "${RED}FAIL${NC} Test coverage is ${COVERAGE}% (< 70%)"
     exit 1
 fi
 echo
@@ -158,7 +158,7 @@ echo -e "${GREEN}All tests passed!${NC}"
 echo "================================"
 echo
 echo "Summary:"
-echo "  • Binary builds successfully"
-echo "  • All commands work correctly"
-echo "  • Test coverage: ${COVERAGE}%"
-echo "  • Code quality checks pass"
+echo "  - Binary builds successfully"
+echo "  - All commands work correctly"
+echo "  - Test coverage: ${COVERAGE}%"
+echo "  - Code quality checks pass"

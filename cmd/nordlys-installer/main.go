@@ -60,7 +60,7 @@ var uninstallCmd = &cobra.Command{
 				continue
 			}
 
-			fmt.Printf("✅ Removed Nordlys configuration from %s\n", toolName)
+			fmt.Printf("Removed Nordlys configuration from %s\n", toolName)
 		}
 	},
 }
@@ -77,24 +77,24 @@ var validateCmd = &cobra.Command{
 
 		fmt.Println("Validating API key format...")
 		if err := config.ValidateAPIKey(apiKey); err != nil {
-			fmt.Fprintf(os.Stderr, "❌ Invalid API key: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Invalid API key: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Println("✅ API key format is valid")
+		fmt.Println("API key format is valid")
 
 		fmt.Println("Testing API connection...")
 		if err := config.ValidateAPIConnection(apiKey); err != nil {
-			fmt.Fprintf(os.Stderr, "❌ API connection failed: %v\n", err)
+			fmt.Fprintf(os.Stderr, "API connection failed: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Println("✅ API connection successful")
+		fmt.Println("API connection successful")
 
 		fmt.Println("\nValidating tool configurations...")
 		for _, tool := range tools.GetAllTools() {
 			if err := tool.Validate(); err != nil {
-				fmt.Printf("⚠️  %s: %v\n", tool.Name(), err)
+				fmt.Printf("%s: %v\n", tool.Name(), err)
 			} else {
-				fmt.Printf("✅ %s: configured\n", tool.Name())
+				fmt.Printf("%s: configured\n", tool.Name())
 			}
 		}
 	},
@@ -114,9 +114,9 @@ var listCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Supported tools:")
 		for _, tool := range tools.GetAllTools() {
-			installed := "✗"
+			installed := "no"
 			if tool.IsInstalled() {
-				installed = "✓"
+				installed = "yes"
 			}
 			node := ""
 			if tool.RequiresNode() {
@@ -196,17 +196,17 @@ func runInstaller(cmd *cobra.Command, args []string) {
 
 		if tool.RequiresNode() {
 			if err := runtime.EnsureNodeJS(); err != nil {
-				fmt.Fprintf(os.Stderr, "❌ %s: %v\n", tool.Name(), err)
+				fmt.Fprintf(os.Stderr, "%s: %v\n", tool.Name(), err)
 				continue
 			}
 		}
 
 		if err := tool.UpdateConfig(apiKey, model, constants.APIBaseURL); err != nil {
-			fmt.Fprintf(os.Stderr, "❌ %s: %v\n", tool.Name(), err)
+			fmt.Fprintf(os.Stderr, "%s: %v\n", tool.Name(), err)
 			continue
 		}
 
-		fmt.Printf("✅ %s configured successfully\n", tool.Name())
+		fmt.Printf("%s configured successfully\n", tool.Name())
 	}
 }
 
@@ -242,17 +242,17 @@ func runToolUpdate(tool tools.Tool) func(*cobra.Command, []string) {
 
 		if tool.RequiresNode() {
 			if err := runtime.EnsureNodeJS(); err != nil {
-				fmt.Fprintf(os.Stderr, "❌ %s: %v\n", tool.Name(), err)
+				fmt.Fprintf(os.Stderr, "%s: %v\n", tool.Name(), err)
 				os.Exit(1)
 			}
 		}
 
 		if err := tool.UpdateConfig(resolvedAPIKey, resolvedModel, constants.APIBaseURL); err != nil {
-			fmt.Fprintf(os.Stderr, "❌ %s: %v\n", tool.Name(), err)
+			fmt.Fprintf(os.Stderr, "%s: %v\n", tool.Name(), err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("✅ %s updated successfully\n", tool.Name())
+		fmt.Printf("%s updated successfully\n", tool.Name())
 	}
 }
 

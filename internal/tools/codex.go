@@ -61,7 +61,9 @@ func (c *Codex) UpdateConfig(apiKey, model, baseURL string) error {
 	}
 
 	// Validate against schema (convert to JSON for validation)
-	ValidateConfig(CodexSchemaURL, codexConfig)
+	if err := ValidateConfig(CodexSchemaURL, codexConfig); err != nil {
+		return err
+	}
 
 	// Write environment file for credentials
 	envPath := filepath.Join(filepath.Dir(path), ".env")
@@ -172,7 +174,7 @@ func (c *Codex) Uninstall() error {
 
 	// Remove env file
 	envPath := filepath.Join(filepath.Dir(path), ".env")
-	os.Remove(envPath)
+	_ = os.Remove(envPath)
 
 	return config.WriteTOMLFile(path, data)
 }

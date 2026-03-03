@@ -179,7 +179,7 @@ func (m Model) View() string {
 func (m Model) viewToolSelect() string {
 	var b strings.Builder
 
-	b.WriteString(TitleStyle.Render("🚀 Nordlys Installer"))
+	b.WriteString(TitleStyle.Render("Nordlys Installer"))
 	b.WriteString("\n\n")
 	b.WriteString("Select tools to configure with Nordlys:\n\n")
 
@@ -191,7 +191,7 @@ func (m Model) viewToolSelect() string {
 
 		checked := " "
 		if m.selected[i] {
-			checked = "✓"
+			checked = "x"
 		}
 
 		line := fmt.Sprintf("%s [%s] %s - %s", cursor, checked, tool.Name(), tool.Description())
@@ -212,7 +212,7 @@ func (m Model) viewToolSelect() string {
 func (m Model) viewAPIKeyInput() string {
 	var b strings.Builder
 
-	b.WriteString(TitleStyle.Render("🔑 API Key Configuration"))
+	b.WriteString(TitleStyle.Render("API Key Configuration"))
 	b.WriteString("\n\n")
 	b.WriteString(PromptStyle.Render(fmt.Sprintf("Get your API key from: %s", constants.APIKeyURL)))
 	b.WriteString("\n\n")
@@ -226,7 +226,7 @@ func (m Model) viewAPIKeyInput() string {
 func (m Model) viewInstalling() string {
 	var b strings.Builder
 
-	b.WriteString(TitleStyle.Render("⚙️  Installing..."))
+	b.WriteString(TitleStyle.Render("Installing..."))
 	b.WriteString("\n\n")
 
 	for i, tool := range m.tools {
@@ -236,11 +236,11 @@ func (m Model) viewInstalling() string {
 
 		done := slices.Contains(m.installedDone, tool.Name())
 
-		status := "⏳"
+		status := "waiting"
 		if done {
-			status = "✅"
+			status = "done"
 		} else if tool.Name() == m.currentTool {
-			status = "🔄"
+			status = "configuring"
 		}
 
 		b.WriteString(fmt.Sprintf("%s %s\n", status, tool.Name()))
@@ -252,12 +252,12 @@ func (m Model) viewInstalling() string {
 func (m Model) viewComplete() string {
 	var b strings.Builder
 
-	b.WriteString(SuccessStyle.Render("✅ Installation Complete!"))
+	b.WriteString(SuccessStyle.Render("Installation complete"))
 	b.WriteString("\n\n")
 	b.WriteString("Configured tools:\n\n")
 
 	for _, toolName := range m.installedDone {
-		b.WriteString(fmt.Sprintf("  ✓ %s\n", toolName))
+		b.WriteString(fmt.Sprintf("  - %s\n", toolName))
 	}
 
 	b.WriteString("\n")
@@ -269,7 +269,7 @@ func (m Model) viewComplete() string {
 func (m Model) viewError() string {
 	var b strings.Builder
 
-	b.WriteString(ErrorStyle.Render("❌ Error"))
+	b.WriteString(ErrorStyle.Render("Error"))
 	b.WriteString("\n\n")
 	b.WriteString(m.err.Error())
 	b.WriteString("\n\n")

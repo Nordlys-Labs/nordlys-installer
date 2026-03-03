@@ -90,8 +90,13 @@ func ValidateConfig(schemaURL string, config interface{}) error {
 
 // structToMap converts a struct to map[string]any for merging with existing configs
 func structToMap(v interface{}) map[string]any {
-	data, _ := json.Marshal(v)
+	data, err := json.Marshal(v)
+	if err != nil {
+		return nil
+	}
 	var result map[string]any
-	json.Unmarshal(data, &result)
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil
+	}
 	return result
 }

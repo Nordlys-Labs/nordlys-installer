@@ -75,7 +75,9 @@ func (o *OpenCode) UpdateConfig(apiKey, model, baseURL string) error {
 	}
 
 	// Validate against schema
-	ValidateConfig(OpenCodeSchemaURL, nordlysConfig)
+	if err := ValidateConfig(OpenCodeSchemaURL, nordlysConfig); err != nil {
+		return err
+	}
 
 	// Convert to map for merging
 	updates := structToMap(nordlysConfig)

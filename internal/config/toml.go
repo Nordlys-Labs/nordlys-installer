@@ -43,7 +43,7 @@ func WriteTOMLFile(path string, data map[string]any) error {
 	}
 
 	if err := os.Rename(tmpFile, path); err != nil {
-		os.Remove(tmpFile)
+		_ = os.Remove(tmpFile)
 		return fmt.Errorf("failed to rename temp file: %w", err)
 	}
 
