@@ -4,9 +4,19 @@ CLI to configure AI coding tools (Claude Code, OpenCode, Codex, Gemini CLI, Grok
 
 ## Install
 
+**macOS / Linux:**
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/nordlys-labs/nordlys-installer/main/scripts/install.sh | bash
 ```
+
+**Windows (PowerShell):**
+
+```powershell
+irm https://raw.githubusercontent.com/nordlys-labs/nordlys-installer/main/scripts/install.ps1 | iex
+```
+
+Restart your terminal after installation so PATH updates take effect.
 
 ## Usage
 
