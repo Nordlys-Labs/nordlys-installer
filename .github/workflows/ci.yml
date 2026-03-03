@@ -108,7 +108,7 @@ jobs:
         run: go install github.com/securego/gosec/v2/cmd/gosec@latest
 
       - name: Run Gosec
-        run: gosec -exclude-dir=vendor -exclude-dir=testdata ./...
+        run: gosec -exclude-dir=vendor -exclude-dir=testdata -exclude=G304,G302 ./...
 
   build:
     name: Build

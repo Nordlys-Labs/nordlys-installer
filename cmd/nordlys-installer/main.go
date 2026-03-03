@@ -5,13 +5,14 @@ import (
 	"os"
 	"strings"
 
+	"github.com/spf13/cobra"
+
 	"github.com/nordlys-labs/nordlys-installer/internal/config"
 	"github.com/nordlys-labs/nordlys-installer/internal/constants"
 	"github.com/nordlys-labs/nordlys-installer/internal/runtime"
 	"github.com/nordlys-labs/nordlys-installer/internal/tools"
 	"github.com/nordlys-labs/nordlys-installer/internal/ui"
 	"github.com/nordlys-labs/nordlys-installer/internal/updater"
-	"github.com/spf13/cobra"
 )
 
 var (
@@ -69,21 +70,21 @@ var validateCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate Nordlys configuration",
 	Run: func(cmd *cobra.Command, args []string) {
-		apiKey := os.Getenv("NORDLYS_API_KEY")
-		if apiKey == "" {
+		validateAPIKey := os.Getenv("NORDLYS_API_KEY")
+		if validateAPIKey == "" {
 			fmt.Fprintln(os.Stderr, "NORDLYS_API_KEY environment variable not set")
 			os.Exit(1)
 		}
 
 		fmt.Println("Validating API key format...")
-		if err := config.ValidateAPIKey(apiKey); err != nil {
+		if err := config.ValidateAPIKey(validateAPIKey); err != nil {
 			fmt.Fprintf(os.Stderr, "Invalid API key: %v\n", err)
 			os.Exit(1)
 		}
 		fmt.Println("API key format is valid")
 
 		fmt.Println("Testing API connection...")
-		if err := config.ValidateAPIConnection(apiKey); err != nil {
+		if err := config.ValidateAPIConnection(validateAPIKey); err != nil {
 			fmt.Fprintf(os.Stderr, "API connection failed: %v\n", err)
 			os.Exit(1)
 		}
@@ -216,8 +217,8 @@ func runToolUpdate(tool tools.Tool) func(*cobra.Command, []string) {
 		if resolvedAPIKey == "" {
 			resolvedAPIKey = os.Getenv("NORDLYS_API_KEY")
 		}
+		existingKey, existingModel := tool.GetExistingConfig()
 		if resolvedAPIKey == "" {
-			existingKey, _ := tool.GetExistingConfig()
 			resolvedAPIKey = existingKey
 		}
 		if resolvedAPIKey == "" {
@@ -231,7 +232,6 @@ func runToolUpdate(tool tools.Tool) func(*cobra.Command, []string) {
 
 		resolvedModel := model
 		if resolvedModel == "" {
-			_, existingModel := tool.GetExistingConfig()
 			resolvedModel = existingModel
 		}
 		if resolvedModel == "" {

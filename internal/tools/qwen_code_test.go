@@ -73,7 +73,10 @@ func TestQwenCode_UpdateConfig(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	path, _ := q.ConfigPath()
+	path, err := q.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 	data, err := config.ReadJSONFile(path)
 	if err != nil {
 		t.Fatalf("ReadJSONFile() error = %v", err)
@@ -109,7 +112,7 @@ func TestQwenCode_Validate(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	if err := q.Validate(); err != nil {
+	if err = q.Validate(); err != nil {
 		t.Errorf("Validate() should accept valid key, got error: %v", err)
 	}
 
@@ -119,7 +122,7 @@ func TestQwenCode_Validate(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	if err := q.Validate(); err == nil {
+	if err = q.Validate(); err == nil {
 		t.Error("Validate() should reject invalid key")
 	}
 }
@@ -129,7 +132,10 @@ func TestQwenCode_Uninstall(t *testing.T) {
 
 	tmpDir := t.TempDir()
 	q := NewQwenCode(tmpDir)
-	configPath, _ := q.ConfigPath()
+	configPath, err := q.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 
 	initialData := map[string]any{
 		"model": map[string]any{
@@ -150,17 +156,17 @@ func TestQwenCode_Uninstall(t *testing.T) {
 		},
 		"userSetting": "keep-this",
 	}
-	if err := config.WriteJSONFile(configPath, initialData); err != nil {
+	if err = config.WriteJSONFile(configPath, initialData); err != nil {
 		t.Fatalf("setup WriteJSONFile() error = %v", err)
 	}
 
 	// Write env file
 	envPath := filepath.Join(filepath.Dir(configPath), ".env")
-	if err := os.WriteFile(envPath, []byte("OPENAI_API_KEY=test-key\n"), 0o600); err != nil {
+	if err = os.WriteFile(envPath, []byte("OPENAI_API_KEY=test-key\n"), 0o600); err != nil {
 		t.Fatalf("setup WriteFile() error = %v", err)
 	}
 
-	if err := q.Uninstall(); err != nil {
+	if err = q.Uninstall(); err != nil {
 		t.Fatalf("Uninstall() error = %v", err)
 	}
 
@@ -193,12 +199,16 @@ func TestQwenCode_FullWorkflow(t *testing.T) {
 	baseURL := "https://api.nordlys.ai/v1"
 
 	// Install
-	if err := q.UpdateConfig(apiKey, model, baseURL); err != nil {
+	err := q.UpdateConfig(apiKey, model, baseURL)
+	if err != nil {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
 	// Verify
-	configPath, _ := q.ConfigPath()
+	configPath, err := q.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 	data, err := config.ReadJSONFile(configPath)
 	if err != nil {
 		t.Fatalf("ReadJSONFile() error = %v", err)
@@ -213,12 +223,12 @@ func TestQwenCode_FullWorkflow(t *testing.T) {
 	}
 
 	// Validate
-	if err := q.Validate(); err != nil {
+	if err = q.Validate(); err != nil {
 		t.Errorf("Validate() error = %v", err)
 	}
 
 	// Uninstall
-	if err := q.Uninstall(); err != nil {
+	if err = q.Uninstall(); err != nil {
 		t.Fatalf("Uninstall() error = %v", err)
 	}
 }

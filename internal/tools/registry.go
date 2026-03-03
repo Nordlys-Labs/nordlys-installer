@@ -6,7 +6,10 @@ import (
 )
 
 func GetAllTools() []Tool {
-	home, _ := os.UserHomeDir()
+	home, err := os.UserHomeDir()
+	if err != nil {
+		home = "."
+	}
 	return []Tool{
 		NewClaudeCode(filepath.Join(home, ".claude")),
 		NewOpenCode(filepath.Join(home, ".config", "opencode")),

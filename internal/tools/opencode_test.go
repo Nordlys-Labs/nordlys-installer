@@ -63,7 +63,10 @@ func TestOpenCode_UpdateConfig(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	path, _ := o.ConfigPath()
+	path, err := o.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 	data, err := config.ReadJSONFile(path)
 	if err != nil {
 		t.Fatalf("ReadJSONFile() error = %v", err)
@@ -104,7 +107,7 @@ func TestOpenCode_Validate(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	if err := o.Validate(); err != nil {
+	if err = o.Validate(); err != nil {
 		t.Errorf("Validate() should accept valid key, got error: %v", err)
 	}
 
@@ -113,7 +116,7 @@ func TestOpenCode_Validate(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	if err := o.Validate(); err == nil {
+	if err = o.Validate(); err == nil {
 		t.Error("Validate() should reject invalid key")
 	}
 }
@@ -144,7 +147,10 @@ func TestOpenCode_Uninstall(t *testing.T) {
 
 	tmpDir := t.TempDir()
 	o := NewOpenCode(tmpDir)
-	configPath, _ := o.ConfigPath()
+	configPath, err := o.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 
 	initialData := map[string]any{
 		"provider": map[string]any{
@@ -160,11 +166,11 @@ func TestOpenCode_Uninstall(t *testing.T) {
 		"model":       "nordlys/hypernova",
 		"userSetting": "keep-this",
 	}
-	if err := config.WriteJSONFile(configPath, initialData); err != nil {
+	if err = config.WriteJSONFile(configPath, initialData); err != nil {
 		t.Fatalf("setup WriteJSONFile() error = %v", err)
 	}
 
-	if err := o.Uninstall(); err != nil {
+	if err = o.Uninstall(); err != nil {
 		t.Fatalf("Uninstall() error = %v", err)
 	}
 
@@ -196,7 +202,10 @@ func TestOpenCode_FullWorkflow(t *testing.T) {
 
 	tmpDir := t.TempDir()
 	o := NewOpenCode(tmpDir)
-	configPath, _ := o.ConfigPath()
+	configPath, err := o.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 
 	// Create existing config with other providers
 	existingConfig := map[string]any{
@@ -207,7 +216,7 @@ func TestOpenCode_FullWorkflow(t *testing.T) {
 		},
 		"userPreference": "preserve",
 	}
-	if err := config.WriteJSONFile(configPath, existingConfig); err != nil {
+	if err = config.WriteJSONFile(configPath, existingConfig); err != nil {
 		t.Fatalf("setup WriteJSONFile() error = %v", err)
 	}
 
@@ -216,7 +225,8 @@ func TestOpenCode_FullWorkflow(t *testing.T) {
 	baseURL := "https://api.nordlys.ai/v1"
 
 	// Install
-	if err := o.UpdateConfig(apiKey, model, baseURL); err != nil {
+	err = o.UpdateConfig(apiKey, model, baseURL)
+	if err != nil {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
@@ -257,12 +267,12 @@ func TestOpenCode_FullWorkflow(t *testing.T) {
 	}
 
 	// Validate
-	if err := o.Validate(); err != nil {
+	if err = o.Validate(); err != nil {
 		t.Errorf("Validate() error = %v", err)
 	}
 
 	// Uninstall
-	if err := o.Uninstall(); err != nil {
+	if err = o.Uninstall(); err != nil {
 		t.Fatalf("Uninstall() error = %v", err)
 	}
 

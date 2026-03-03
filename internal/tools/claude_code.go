@@ -68,7 +68,7 @@ func (c *ClaudeCode) UpdateConfig(apiKey, model, baseURL string) error {
 	updates := structToMap(claudeConfig)
 
 	// Update settings.json
-	if err := config.UpdateJSONFields(path, updates); err != nil {
+	if err = config.UpdateJSONFields(path, updates); err != nil {
 		return err
 	}
 

@@ -72,7 +72,10 @@ func TestClaudeCode_UpdateConfig(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	path, _ := c.ConfigPath()
+	path, err := c.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 	data, err := config.ReadJSONFile(path)
 	if err != nil {
 		t.Fatalf("ReadJSONFile() error = %v", err)
@@ -107,7 +110,7 @@ func TestClaudeCode_Validate(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	if err := c.Validate(); err != nil {
+	if err = c.Validate(); err != nil {
 		t.Errorf("Validate() should accept valid key, got error: %v", err)
 	}
 
@@ -116,7 +119,7 @@ func TestClaudeCode_Validate(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	if err := c.Validate(); err == nil {
+	if err = c.Validate(); err == nil {
 		t.Error("Validate() should reject invalid key")
 	}
 }
@@ -126,7 +129,10 @@ func TestClaudeCode_Uninstall(t *testing.T) {
 
 	tmpDir := t.TempDir()
 	c := NewClaudeCode(tmpDir)
-	configPath, _ := c.ConfigPath()
+	configPath, err := c.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 
 	initialData := map[string]any{
 		"model": "nordlys/hypernova",
@@ -135,11 +141,11 @@ func TestClaudeCode_Uninstall(t *testing.T) {
 		},
 		"userSetting": "keep-this",
 	}
-	if err := config.WriteJSONFile(configPath, initialData); err != nil {
+	if err = config.WriteJSONFile(configPath, initialData); err != nil {
 		t.Fatalf("setup WriteJSONFile() error = %v", err)
 	}
 
-	if err := c.Uninstall(); err != nil {
+	if err = c.Uninstall(); err != nil {
 		t.Fatalf("Uninstall() error = %v", err)
 	}
 
@@ -166,7 +172,10 @@ func TestClaudeCode_FullWorkflow(t *testing.T) {
 
 	tmpDir := t.TempDir()
 	c := NewClaudeCode(tmpDir)
-	configPath, _ := c.ConfigPath()
+	configPath, err := c.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 
 	// Create existing config with user settings
 	existingConfig := map[string]any{
@@ -174,7 +183,7 @@ func TestClaudeCode_FullWorkflow(t *testing.T) {
 		"theme":       "dark",
 		"fontSize":    14,
 	}
-	if err := config.WriteJSONFile(configPath, existingConfig); err != nil {
+	if err = config.WriteJSONFile(configPath, existingConfig); err != nil {
 		t.Fatalf("setup WriteJSONFile() error = %v", err)
 	}
 
@@ -184,7 +193,7 @@ func TestClaudeCode_FullWorkflow(t *testing.T) {
 	baseURL := "https://api.nordlys.ai"
 
 	// Install
-	if err := c.UpdateConfig(apiKey, model, baseURL); err != nil {
+	if err = c.UpdateConfig(apiKey, model, baseURL); err != nil {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
@@ -219,12 +228,12 @@ func TestClaudeCode_FullWorkflow(t *testing.T) {
 	}
 
 	// Validate
-	if err := c.Validate(); err != nil {
+	if err = c.Validate(); err != nil {
 		t.Errorf("Validate() error = %v", err)
 	}
 
 	// Uninstall
-	if err := c.Uninstall(); err != nil {
+	if err = c.Uninstall(); err != nil {
 		t.Fatalf("Uninstall() error = %v", err)
 	}
 

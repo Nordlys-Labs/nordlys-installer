@@ -28,7 +28,7 @@ func ReadTOMLFile(path string) (map[string]any, error) {
 // WriteTOMLFile writes a map to a TOML file
 func WriteTOMLFile(path string, data map[string]any) error {
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
 
@@ -38,12 +38,14 @@ func WriteTOMLFile(path string, data map[string]any) error {
 	}
 
 	tmpFile := path + ".tmp"
-	if err := os.WriteFile(tmpFile, content, 0o644); err != nil {
+	if err := os.WriteFile(tmpFile, content, 0o600); err != nil {
 		return fmt.Errorf("failed to write temp file: %w", err)
 	}
 
 	if err := os.Rename(tmpFile, path); err != nil {
-		_ = os.Remove(tmpFile)
+		if rmErr := os.Remove(tmpFile); rmErr != nil {
+			return fmt.Errorf("rename failed: %w; cleanup failed: %v", err, rmErr)
+		}
 		return fmt.Errorf("failed to rename temp file: %w", err)
 	}
 

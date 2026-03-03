@@ -260,8 +260,8 @@ func TestUpdater_SelfUpdate_NoAsset(t *testing.T) {
 }
 
 type mockSequentialHTTPClient struct {
-	responses []*http.Response
 	callCount *int
+	responses []*http.Response
 }
 
 func (m *mockSequentialHTTPClient) Get(url string) (*http.Response, error) {

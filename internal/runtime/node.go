@@ -41,7 +41,7 @@ func IsNodeInstalled() bool {
 
 func EnsureNodeJS() error {
 	if !IsNodeInstalled() {
-		return fmt.Errorf("Node.js is not installed. Please install Node.js v%d+ from https://nodejs.org/", MinNodeVersion)
+		return fmt.Errorf("node.js is not installed, install v%d+ from https://nodejs.org/", MinNodeVersion)
 	}
 
 	version, err := GetNodeVersion()
@@ -50,7 +50,7 @@ func EnsureNodeJS() error {
 	}
 
 	if version < MinNodeVersion {
-		return fmt.Errorf("Node.js v%d found, but v%d+ is required. Please upgrade from https://nodejs.org/", version, MinNodeVersion)
+		return fmt.Errorf("node.js v%d found, v%d+ required, upgrade from https://nodejs.org/", version, MinNodeVersion)
 	}
 
 	return nil

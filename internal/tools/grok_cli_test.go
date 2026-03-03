@@ -72,7 +72,10 @@ func TestGrokCLI_UpdateConfig(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	path, _ := g.ConfigPath()
+	path, err := g.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 	data, err := config.ReadJSONFile(path)
 	if err != nil {
 		t.Fatalf("ReadJSONFile() error = %v", err)
@@ -103,7 +106,7 @@ func TestGrokCLI_Validate(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	if err := g.Validate(); err != nil {
+	if err = g.Validate(); err != nil {
 		t.Errorf("Validate() should accept valid key, got error: %v", err)
 	}
 
@@ -112,7 +115,7 @@ func TestGrokCLI_Validate(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	if err := g.Validate(); err == nil {
+	if err = g.Validate(); err == nil {
 		t.Error("Validate() should reject invalid key")
 	}
 }
@@ -122,7 +125,10 @@ func TestGrokCLI_Uninstall(t *testing.T) {
 
 	tmpDir := t.TempDir()
 	g := NewGrokCLI(tmpDir)
-	configPath, _ := g.ConfigPath()
+	configPath, err := g.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 
 	initialData := map[string]any{
 		"defaultModel": "nordlys/hypernova",
@@ -131,11 +137,11 @@ func TestGrokCLI_Uninstall(t *testing.T) {
 		"models":       []string{"nordlys/hypernova"},
 		"userSetting":  "keep-this",
 	}
-	if err := config.WriteJSONFile(configPath, initialData); err != nil {
+	if err = config.WriteJSONFile(configPath, initialData); err != nil {
 		t.Fatalf("setup WriteJSONFile() error = %v", err)
 	}
 
-	if err := g.Uninstall(); err != nil {
+	if err = g.Uninstall(); err != nil {
 		t.Fatalf("Uninstall() error = %v", err)
 	}
 
@@ -172,12 +178,16 @@ func TestGrokCLI_FullWorkflow(t *testing.T) {
 	baseURL := "https://api.nordlys.ai"
 
 	// Install
-	if err := g.UpdateConfig(apiKey, model, baseURL); err != nil {
+	err := g.UpdateConfig(apiKey, model, baseURL)
+	if err != nil {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
 	// Verify
-	configPath, _ := g.ConfigPath()
+	configPath, err := g.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 	data, err := config.ReadJSONFile(configPath)
 	if err != nil {
 		t.Fatalf("ReadJSONFile() error = %v", err)
@@ -191,12 +201,12 @@ func TestGrokCLI_FullWorkflow(t *testing.T) {
 	}
 
 	// Validate
-	if err := g.Validate(); err != nil {
+	if err = g.Validate(); err != nil {
 		t.Errorf("Validate() error = %v", err)
 	}
 
 	// Uninstall
-	if err := g.Uninstall(); err != nil {
+	if err = g.Uninstall(); err != nil {
 		t.Fatalf("Uninstall() error = %v", err)
 	}
 }

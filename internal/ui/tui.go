@@ -7,6 +7,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+
 	"github.com/nordlys-labs/nordlys-installer/internal/constants"
 	"github.com/nordlys-labs/nordlys-installer/internal/runtime"
 	"github.com/nordlys-labs/nordlys-installer/internal/tools"
@@ -23,21 +24,21 @@ const (
 )
 
 type Model struct {
-	state         State
-	tools         []tools.Tool
+	err           error
 	selected      map[int]bool
-	cursor        int
-	apiKeyInput   textinput.Model
 	apiKey        string
 	model         string
-	err           error
-	installedDone []string
 	currentTool   string
+	tools         []tools.Tool
+	installedDone []string
+	apiKeyInput   textinput.Model
+	state         State
+	cursor        int
 }
 
 type installMsg struct {
-	tool string
 	err  error
+	tool string
 }
 
 func NewModel() Model {
@@ -243,7 +244,7 @@ func (m Model) viewInstalling() string {
 			status = "configuring"
 		}
 
-		b.WriteString(fmt.Sprintf("%s %s\n", status, tool.Name()))
+		fmt.Fprintf(&b, "%s %s\n", status, tool.Name())
 	}
 
 	return BorderStyle.Render(b.String())
@@ -257,7 +258,7 @@ func (m Model) viewComplete() string {
 	b.WriteString("Configured tools:\n\n")
 
 	for _, toolName := range m.installedDone {
-		b.WriteString(fmt.Sprintf("  - %s\n", toolName))
+		fmt.Fprintf(&b, "  - %s\n", toolName)
 	}
 
 	b.WriteString("\n")

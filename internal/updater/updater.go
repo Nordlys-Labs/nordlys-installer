@@ -107,7 +107,7 @@ func (u *Updater) SelfUpdate() error {
 	defer resp.Body.Close()
 
 	var release Release
-	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
+	if err = json.NewDecoder(resp.Body).Decode(&release); err != nil {
 		return err
 	}
 
@@ -146,27 +146,37 @@ func (u *Updater) SelfUpdate() error {
 		err = closeErr
 	}
 	if err != nil {
-		_ = os.Remove(tmpFile)
+		if rmErr := os.Remove(tmpFile); rmErr != nil {
+			return fmt.Errorf("%w; cleanup failed: %v", err, rmErr)
+		}
 		return err
 	}
 
 	if err := os.Chmod(tmpFile, 0o755); err != nil {
-		_ = os.Remove(tmpFile)
+		if rmErr := os.Remove(tmpFile); rmErr != nil {
+			return fmt.Errorf("chmod failed: %w; cleanup failed: %v", err, rmErr)
+		}
 		return err
 	}
 
 	backupPath := execPath + ".old"
 	if err := os.Rename(execPath, backupPath); err != nil {
-		_ = os.Remove(tmpFile)
+		if rmErr := os.Remove(tmpFile); rmErr != nil {
+			return fmt.Errorf("rename failed: %w; cleanup failed: %v", err, rmErr)
+		}
 		return err
 	}
 
 	if err := os.Rename(tmpFile, execPath); err != nil {
-		_ = os.Rename(backupPath, execPath)
+		if revertErr := os.Rename(backupPath, execPath); revertErr != nil {
+			return fmt.Errorf("rename failed: %w; revert failed: %v", err, revertErr)
+		}
 		return err
 	}
 
-	_ = os.Remove(backupPath)
+	if err := os.Remove(backupPath); err != nil {
+		return fmt.Errorf("remove backup: %w", err)
+	}
 
 	fmt.Printf("Updated to version %s\n", latestVersion)
 	return nil
@@ -194,6 +204,9 @@ func GetAssetName() string {
 }
 
 func GetUpdateCheckCachePath() string {
-	home, _ := os.UserHomeDir()
+	home, err := os.UserHomeDir()
+	if err != nil {
+		home = os.TempDir()
+	}
 	return filepath.Join(home, ".cache", "nordlys-installer", "update-check")
 }

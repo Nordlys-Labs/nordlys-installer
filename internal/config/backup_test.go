@@ -12,14 +12,14 @@ func TestCreateBackup(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name    string
 		setup   func(string) error
+		name    string
 		wantErr bool
 	}{
 		{
 			name: "backup existing file",
 			setup: func(path string) error {
-				return os.WriteFile(path, []byte("original content"), 0o644)
+				return os.WriteFile(path, []byte("original content"), 0o600)
 			},
 			wantErr: false,
 		},
@@ -75,8 +75,8 @@ func TestGetLatestBackup(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name       string
 		setup      func(string) error
+		name       string
 		wantErr    bool
 		wantLatest bool
 	}{
@@ -84,7 +84,9 @@ func TestGetLatestBackup(t *testing.T) {
 			name: "single backup",
 			setup: func(dir string) error {
 				testFile := filepath.Join(dir, "test.txt")
-				os.WriteFile(testFile, []byte("content"), 0o644)
+				if err := os.WriteFile(testFile, []byte("content"), 0o600); err != nil {
+					return err
+				}
 				return CreateBackup(testFile)
 			},
 			wantErr:    false,
@@ -94,10 +96,16 @@ func TestGetLatestBackup(t *testing.T) {
 			name: "multiple backups",
 			setup: func(dir string) error {
 				testFile := filepath.Join(dir, "test.txt")
-				os.WriteFile(testFile, []byte("content1"), 0o644)
-				CreateBackup(testFile)
+				if err := os.WriteFile(testFile, []byte("content1"), 0o600); err != nil {
+					return err
+				}
+				if err := CreateBackup(testFile); err != nil {
+					return err
+				}
 				time.Sleep(10 * time.Millisecond)
-				os.WriteFile(testFile, []byte("content2"), 0o644)
+				if err := os.WriteFile(testFile, []byte("content2"), 0o600); err != nil {
+					return err
+				}
 				return CreateBackup(testFile)
 			},
 			wantErr:    false,
@@ -148,17 +156,23 @@ func TestRestoreFromBackup(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name    string
 		setup   func(string) (string, error)
+		name    string
 		wantErr bool
 	}{
 		{
 			name: "restore from backup",
 			setup: func(dir string) (string, error) {
 				testFile := filepath.Join(dir, "test.txt")
-				os.WriteFile(testFile, []byte("original"), 0o644)
-				CreateBackup(testFile)
-				os.WriteFile(testFile, []byte("modified"), 0o644)
+				if err := os.WriteFile(testFile, []byte("original"), 0o600); err != nil {
+					return "", err
+				}
+				if err := CreateBackup(testFile); err != nil {
+					return "", err
+				}
+				if err := os.WriteFile(testFile, []byte("modified"), 0o600); err != nil {
+					return "", err
+				}
 				return testFile, nil
 			},
 			wantErr: false,
@@ -167,7 +181,9 @@ func TestRestoreFromBackup(t *testing.T) {
 			name: "no backup to restore",
 			setup: func(dir string) (string, error) {
 				testFile := filepath.Join(dir, "test.txt")
-				os.WriteFile(testFile, []byte("content"), 0o644)
+				if err := os.WriteFile(testFile, []byte("content"), 0o600); err != nil {
+					return "", err
+				}
 				return testFile, nil
 			},
 			wantErr: true,

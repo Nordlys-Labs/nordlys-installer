@@ -72,7 +72,10 @@ func TestCodex_UpdateConfig(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	path, _ := c.ConfigPath()
+	path, err := c.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 	data, err := config.ReadTOMLFile(path)
 	if err != nil {
 		t.Fatalf("ReadTOMLFile() error = %v", err)
@@ -110,7 +113,7 @@ func TestCodex_Validate(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	if err := c.Validate(); err != nil {
+	if err = c.Validate(); err != nil {
 		t.Errorf("Validate() should accept valid key, got error: %v", err)
 	}
 
@@ -119,7 +122,7 @@ func TestCodex_Validate(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	if err := c.Validate(); err == nil {
+	if err = c.Validate(); err == nil {
 		t.Error("Validate() should reject invalid key")
 	}
 }
@@ -129,7 +132,10 @@ func TestCodex_Uninstall(t *testing.T) {
 
 	tmpDir := t.TempDir()
 	c := NewCodex(tmpDir)
-	configPath, _ := c.ConfigPath()
+	configPath, err := c.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 
 	initialData := map[string]any{
 		"model":          "nordlys/hypernova",
@@ -142,11 +148,11 @@ func TestCodex_Uninstall(t *testing.T) {
 		},
 		"userSetting": "keep-this",
 	}
-	if err := config.WriteTOMLFile(configPath, initialData); err != nil {
+	if err = config.WriteTOMLFile(configPath, initialData); err != nil {
 		t.Fatalf("setup WriteTOMLFile() error = %v", err)
 	}
 
-	if err := c.Uninstall(); err != nil {
+	if err = c.Uninstall(); err != nil {
 		t.Fatalf("Uninstall() error = %v", err)
 	}
 
@@ -179,12 +185,16 @@ func TestCodex_FullWorkflow(t *testing.T) {
 	baseURL := "https://api.nordlys.ai/v1"
 
 	// Install
-	if err := c.UpdateConfig(apiKey, model, baseURL); err != nil {
+	err := c.UpdateConfig(apiKey, model, baseURL)
+	if err != nil {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
 	// Verify
-	configPath, _ := c.ConfigPath()
+	configPath, err := c.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 	data, err := config.ReadTOMLFile(configPath)
 	if err != nil {
 		t.Fatalf("ReadTOMLFile() error = %v", err)
@@ -198,12 +208,12 @@ func TestCodex_FullWorkflow(t *testing.T) {
 	}
 
 	// Validate
-	if err := c.Validate(); err != nil {
+	if err = c.Validate(); err != nil {
 		t.Errorf("Validate() error = %v", err)
 	}
 
 	// Uninstall
-	if err := c.Uninstall(); err != nil {
+	if err = c.Uninstall(); err != nil {
 		t.Fatalf("Uninstall() error = %v", err)
 	}
 

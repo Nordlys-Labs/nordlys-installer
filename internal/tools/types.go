@@ -15,17 +15,17 @@ type OpenCodeConfig struct {
 
 // OpenCodeProvider represents a provider configuration in OpenCode
 type OpenCodeProvider struct {
-	NPM     string                   `json:"npm,omitzero"`
-	Name    string                   `json:"name,omitzero"`
 	Options OpenCodeProviderOptions  `json:"options,omitzero"`
 	Models  map[string]OpenCodeModel `json:"models,omitzero"`
+	NPM     string                   `json:"npm,omitzero"`
+	Name    string                   `json:"name,omitzero"`
 }
 
 // OpenCodeProviderOptions contains provider-specific options
 type OpenCodeProviderOptions struct {
+	Headers map[string]string `json:"headers,omitzero"`
 	BaseURL string            `json:"baseURL,omitzero"`
 	APIKey  string            `json:"apiKey,omitzero"`
-	Headers map[string]string `json:"headers,omitzero"`
 }
 
 // OpenCodeModel represents a model configuration
@@ -74,9 +74,9 @@ type ClaudeCodeEnvironment struct {
 
 // ZedConfig represents Zed editor JSON configuration
 type ZedConfig struct {
-	LanguageModels ZedLanguageModels `json:"language_models,omitzero"`
-	Assistant      ZedAssistant      `json:"assistant,omitzero"`
 	Env            map[string]string `json:"env,omitzero"`
+	Assistant      ZedAssistant      `json:"assistant,omitzero"`
+	LanguageModels ZedLanguageModels `json:"language_models,omitzero"`
 }
 
 // ZedLanguageModels contains language model configurations
@@ -116,25 +116,25 @@ type ZedDefaultModel struct {
 
 // CodexConfig represents Codex TOML configuration
 type CodexConfig struct {
+	ModelProviders map[string]CodexModelProvider `toml:"model_providers,omitzero"`
 	Model          string                        `toml:"model,omitzero"`
 	ModelProvider  string                        `toml:"model_provider,omitzero"`
-	ModelProviders map[string]CodexModelProvider `toml:"model_providers,omitzero"`
 }
 
 // CodexModelProvider represents a model provider in Codex
 type CodexModelProvider struct {
+	HTTPHeaders         map[string]string `toml:"http_headers,omitzero"`
+	EnvHTTPHeaders      map[string]string `toml:"env_http_headers,omitzero"`
+	QueryParams         map[string]string `toml:"query_params,omitzero"`
 	Name                string            `toml:"name,omitzero"`
 	BaseURL             string            `toml:"base_url,omitzero"`
 	EnvKey              string            `toml:"env_key,omitzero"`
 	EnvKeyInstructions  string            `toml:"env_key_instructions,omitzero"`
-	WireAPI             string            `toml:"wire_api,omitzero"` // "chat" | "responses"
-	RequiresOpenAIAuth  bool              `toml:"requires_openai_auth,omitzero"`
-	HTTPHeaders         map[string]string `toml:"http_headers,omitzero"`
-	EnvHTTPHeaders      map[string]string `toml:"env_http_headers,omitzero"`
-	QueryParams         map[string]string `toml:"query_params,omitzero"`
+	WireAPI             string            `toml:"wire_api,omitzero"`
 	RequestMaxRetries   int               `toml:"request_max_retries,omitzero"`
 	StreamIdleTimeoutMS int               `toml:"stream_idle_timeout_ms,omitzero"`
 	StreamMaxRetries    int               `toml:"stream_max_retries,omitzero"`
+	RequiresOpenAIAuth  bool              `toml:"requires_openai_auth,omitzero"`
 }
 
 // =============================================================================
@@ -167,20 +167,20 @@ type QwenCodeModelConfig struct {
 
 // QwenCodeProvider represents a model provider in Qwen Code
 type QwenCodeProvider struct {
+	GenerationConfig *QwenGenerationConfig `json:"generationConfig,omitzero"`
 	ID               string                `json:"id"`
 	Name             string                `json:"name,omitzero"`
 	EnvKey           string                `json:"envKey"`
 	BaseURL          string                `json:"baseUrl,omitzero"`
-	GenerationConfig *QwenGenerationConfig `json:"generationConfig,omitzero"`
 }
 
 // QwenGenerationConfig contains generation parameters
 type QwenGenerationConfig struct {
-	Timeout        int                 `json:"timeout,omitzero"`
-	MaxRetries     int                 `json:"maxRetries,omitzero"`
 	CustomHeaders  map[string]string   `json:"customHeaders,omitzero"`
 	ExtraBody      map[string]any      `json:"extra_body,omitzero"`
 	SamplingParams *QwenSamplingParams `json:"samplingParams,omitzero"`
+	Timeout        int                 `json:"timeout,omitzero"`
+	MaxRetries     int                 `json:"maxRetries,omitzero"`
 }
 
 // QwenSamplingParams contains sampling parameters
@@ -204,8 +204,8 @@ type QwenCodeAuthConfig struct {
 
 // GeminiCLIConfig represents the complete Gemini CLI settings.json structure
 type GeminiCLIConfig struct {
-	PolicyPaths   []string                   `json:"policyPaths,omitzero"`
-	General       *GeminiGeneralConfig       `json:"general,omitzero"`
+	Tools         *GeminiToolsConfig         `json:"tools,omitzero"`
+	MCP           *GeminiMCPConfig           `json:"mcp,omitzero"`
 	Output        *GeminiOutputConfig        `json:"output,omitzero"`
 	UI            *GeminiUIConfig            `json:"ui,omitzero"`
 	IDE           *GeminiIDEConfig           `json:"ide,omitzero"`
@@ -213,10 +213,10 @@ type GeminiCLIConfig struct {
 	Model         *GeminiModelConfig         `json:"model,omitzero"`
 	ModelConfigs  *GeminiModelConfigsConfig  `json:"modelConfigs,omitzero"`
 	Agents        *GeminiAgentsConfig        `json:"agents,omitzero"`
+	Telemetry     *GeminiTelemetryConfig     `json:"telemetry,omitzero"`
+	General       *GeminiGeneralConfig       `json:"general,omitzero"`
+	MCPServers    map[string]GeminiMCPServer `json:"mcpServers,omitzero"`
 	Context       *GeminiContextConfig       `json:"context,omitzero"`
-	Tools         *GeminiToolsConfig         `json:"tools,omitzero"`
-	MCP           *GeminiMCPConfig           `json:"mcp,omitzero"`
-	UseWriteTodos bool                       `json:"useWriteTodos,omitzero"`
 	Security      *GeminiSecurityConfig      `json:"security,omitzero"`
 	Advanced      *GeminiAdvancedConfig      `json:"advanced,omitzero"`
 	Experimental  *GeminiExperimentalConfig  `json:"experimental,omitzero"`
@@ -224,22 +224,22 @@ type GeminiCLIConfig struct {
 	HooksConfig   *GeminiHooksConfigConfig   `json:"hooksConfig,omitzero"`
 	Hooks         *GeminiHooksConfig         `json:"hooks,omitzero"`
 	Admin         *GeminiAdminConfig         `json:"admin,omitzero"`
-	MCPServers    map[string]GeminiMCPServer `json:"mcpServers,omitzero"`
-	Telemetry     *GeminiTelemetryConfig     `json:"telemetry,omitzero"`
+	PolicyPaths   []string                   `json:"policyPaths,omitzero"`
+	UseWriteTodos bool                       `json:"useWriteTodos,omitzero"`
 }
 
 type GeminiGeneralConfig struct {
+	Checkpointing                *GeminiCheckpointingConfig    `json:"checkpointing,omitzero"`
+	SessionRetention             *GeminiSessionRetentionConfig `json:"sessionRetention,omitzero"`
 	PreferredEditor              string                        `json:"preferredEditor,omitzero"`
-	VimMode                      bool                          `json:"vimMode,omitzero"`
 	DefaultApprovalMode          string                        `json:"defaultApprovalMode,omitzero"`
+	VimMode                      bool                          `json:"vimMode,omitzero"`
 	Devtools                     bool                          `json:"devtools,omitzero"`
 	EnableAutoUpdate             bool                          `json:"enableAutoUpdate,omitzero"`
 	EnableAutoUpdateNotification bool                          `json:"enableAutoUpdateNotification,omitzero"`
-	Checkpointing                *GeminiCheckpointingConfig    `json:"checkpointing,omitzero"`
 	EnablePromptCompletion       bool                          `json:"enablePromptCompletion,omitzero"`
 	RetryFetchErrors             bool                          `json:"retryFetchErrors,omitzero"`
 	DebugKeystrokeLogging        bool                          `json:"debugKeystrokeLogging,omitzero"`
-	SessionRetention             *GeminiSessionRetentionConfig `json:"sessionRetention,omitzero"`
 }
 
 type GeminiCheckpointingConfig struct {
@@ -247,10 +247,10 @@ type GeminiCheckpointingConfig struct {
 }
 
 type GeminiSessionRetentionConfig struct {
-	Enabled             bool   `json:"enabled,omitzero"`
 	MaxAge              string `json:"maxAge,omitzero"`
-	MaxCount            int    `json:"maxCount,omitzero"`
 	MinRetention        string `json:"minRetention,omitzero"`
+	MaxCount            int    `json:"maxCount,omitzero"`
+	Enabled             bool   `json:"enabled,omitzero"`
 	WarningAcknowledged bool   `json:"warningAcknowledged,omitzero"`
 }
 
@@ -259,23 +259,23 @@ type GeminiOutputConfig struct {
 }
 
 type GeminiUIConfig struct {
-	Theme                             string                     `json:"theme,omitzero"`
-	AutoThemeSwitching                bool                       `json:"autoThemeSwitching,omitzero"`
-	TerminalBackgroundPollingInterval int                        `json:"terminalBackgroundPollingInterval,omitzero"`
+	Accessibility                     *GeminiAccessibilityConfig `json:"accessibility,omitzero"`
 	CustomThemes                      map[string]any             `json:"customThemes,omitzero"`
-	HideWindowTitle                   bool                       `json:"hideWindowTitle,omitzero"`
+	Footer                            *GeminiUIFooterConfig      `json:"footer,omitzero"`
+	Theme                             string                     `json:"theme,omitzero"`
 	InlineThinkingMode                string                     `json:"inlineThinkingMode,omitzero"`
-	ShowStatusInTitle                 bool                       `json:"showStatusInTitle,omitzero"`
-	DynamicWindowTitle                bool                       `json:"dynamicWindowTitle,omitzero"`
-	ShowHomeDirectoryWarning          bool                       `json:"showHomeDirectoryWarning,omitzero"`
+	CustomWittyPhrases                []string                   `json:"customWittyPhrases,omitzero"`
+	TerminalBackgroundPollingInterval int                        `json:"terminalBackgroundPollingInterval,omitzero"`
+	HideContextSummary                bool                       `json:"hideContextSummary,omitzero"`
+	ShowLineNumbers                   bool                       `json:"showLineNumbers,omitzero"`
 	HideTips                          bool                       `json:"hideTips,omitzero"`
 	ShowShortcutsHint                 bool                       `json:"showShortcutsHint,omitzero"`
 	HideBanner                        bool                       `json:"hideBanner,omitzero"`
-	HideContextSummary                bool                       `json:"hideContextSummary,omitzero"`
-	Footer                            *GeminiUIFooterConfig      `json:"footer,omitzero"`
+	DynamicWindowTitle                bool                       `json:"dynamicWindowTitle,omitzero"`
+	ShowStatusInTitle                 bool                       `json:"showStatusInTitle,omitzero"`
 	HideFooter                        bool                       `json:"hideFooter,omitzero"`
 	ShowMemoryUsage                   bool                       `json:"showMemoryUsage,omitzero"`
-	ShowLineNumbers                   bool                       `json:"showLineNumbers,omitzero"`
+	ShowHomeDirectoryWarning          bool                       `json:"showHomeDirectoryWarning,omitzero"`
 	ShowCitations                     bool                       `json:"showCitations,omitzero"`
 	ShowModelInfoInChat               bool                       `json:"showModelInfoInChat,omitzero"`
 	ShowUserIdentity                  bool                       `json:"showUserIdentity,omitzero"`
@@ -283,8 +283,8 @@ type GeminiUIConfig struct {
 	UseBackgroundColor                bool                       `json:"useBackgroundColor,omitzero"`
 	IncrementalRendering              bool                       `json:"incrementalRendering,omitzero"`
 	ShowSpinner                       bool                       `json:"showSpinner,omitzero"`
-	CustomWittyPhrases                []string                   `json:"customWittyPhrases,omitzero"`
-	Accessibility                     *GeminiAccessibilityConfig `json:"accessibility,omitzero"`
+	HideWindowTitle                   bool                       `json:"hideWindowTitle,omitzero"`
+	AutoThemeSwitching                bool                       `json:"autoThemeSwitching,omitzero"`
 }
 
 type GeminiUIFooterConfig struct {
@@ -309,9 +309,9 @@ type GeminiPrivacyConfig struct {
 }
 
 type GeminiModelConfig struct {
+	SummarizeToolOutput  map[string]any `json:"summarizeToolOutput,omitzero"`
 	Name                 string         `json:"name,omitzero"`
 	MaxSessionTurns      int            `json:"maxSessionTurns,omitzero"`
-	SummarizeToolOutput  map[string]any `json:"summarizeToolOutput,omitzero"`
 	CompressionThreshold float64        `json:"compressionThreshold,omitzero"`
 	DisableLoopDetection bool           `json:"disableLoopDetection,omitzero"`
 	SkipNextSpeakerCheck bool           `json:"skipNextSpeakerCheck,omitzero"`
@@ -329,41 +329,41 @@ type GeminiAgentsConfig struct {
 }
 
 type GeminiContextConfig struct {
-	FileName                         any                        `json:"fileName,omitzero"` // string | []string
-	ImportFormat                     string                     `json:"importFormat,omitzero"`
-	IncludeDirectoryTree             bool                       `json:"includeDirectoryTree,omitzero"`
-	DiscoveryMaxDirs                 int                        `json:"discoveryMaxDirs,omitzero"`
-	IncludeDirectories               []string                   `json:"includeDirectories,omitzero"`
-	LoadMemoryFromIncludeDirectories bool                       `json:"loadMemoryFromIncludeDirectories,omitzero"`
+	FileName                         any                        `json:"fileName,omitzero"`
 	FileFiltering                    *GeminiFileFilteringConfig `json:"fileFiltering,omitzero"`
+	ImportFormat                     string                     `json:"importFormat,omitzero"`
+	IncludeDirectories               []string                   `json:"includeDirectories,omitzero"`
+	DiscoveryMaxDirs                 int                        `json:"discoveryMaxDirs,omitzero"`
+	IncludeDirectoryTree             bool                       `json:"includeDirectoryTree,omitzero"`
+	LoadMemoryFromIncludeDirectories bool                       `json:"loadMemoryFromIncludeDirectories,omitzero"`
 }
 
 type GeminiFileFilteringConfig struct {
+	CustomIgnoreFilePaths     []string `json:"customIgnoreFilePaths,omitzero"`
 	RespectGitIgnore          bool     `json:"respectGitIgnore,omitzero"`
 	RespectGeminiIgnore       bool     `json:"respectGeminiIgnore,omitzero"`
 	EnableRecursiveFileSearch bool     `json:"enableRecursiveFileSearch,omitzero"`
 	EnableFuzzySearch         bool     `json:"enableFuzzySearch,omitzero"`
-	CustomIgnoreFilePaths     []string `json:"customIgnoreFilePaths,omitzero"`
 }
 
 type GeminiToolsConfig struct {
-	Sandbox                     any                `json:"sandbox,omitzero"` // bool | string
+	Sandbox                     any                `json:"sandbox,omitzero"`
 	Shell                       *GeminiShellConfig `json:"shell,omitzero"`
+	DiscoveryCommand            string             `json:"discoveryCommand,omitzero"`
+	CallCommand                 string             `json:"callCommand,omitzero"`
 	Core                        []string           `json:"core,omitzero"`
 	Allowed                     []string           `json:"allowed,omitzero"`
 	Exclude                     []string           `json:"exclude,omitzero"`
-	DiscoveryCommand            string             `json:"discoveryCommand,omitzero"`
-	CallCommand                 string             `json:"callCommand,omitzero"`
-	UseRipgrep                  bool               `json:"useRipgrep,omitzero"`
 	TruncateToolOutputThreshold int                `json:"truncateToolOutputThreshold,omitzero"`
+	UseRipgrep                  bool               `json:"useRipgrep,omitzero"`
 	DisableLLMCorrection        bool               `json:"disableLLMCorrection,omitzero"`
 }
 
 type GeminiShellConfig struct {
-	EnableInteractiveShell      bool   `json:"enableInteractiveShell,omitzero"`
 	Pager                       string `json:"pager,omitzero"`
-	ShowColor                   bool   `json:"showColor,omitzero"`
 	InactivityTimeout           int    `json:"inactivityTimeout,omitzero"`
+	EnableInteractiveShell      bool   `json:"enableInteractiveShell,omitzero"`
+	ShowColor                   bool   `json:"showColor,omitzero"`
 	EnableShellOutputEfficiency bool   `json:"enableShellOutputEfficiency,omitzero"`
 }
 
@@ -374,13 +374,13 @@ type GeminiMCPConfig struct {
 }
 
 type GeminiSecurityConfig struct {
-	DisableYoloMode              bool                      `json:"disableYoloMode,omitzero"`
-	EnablePermanentToolApproval  bool                      `json:"enablePermanentToolApproval,omitzero"`
-	BlockGitExtensions           bool                      `json:"blockGitExtensions,omitzero"`
-	AllowedExtensions            []string                  `json:"allowedExtensions,omitzero"`
 	FolderTrust                  *GeminiFolderTrustConfig  `json:"folderTrust,omitzero"`
 	EnvironmentVariableRedaction *GeminiEnvRedactionConfig `json:"environmentVariableRedaction,omitzero"`
 	Auth                         *GeminiAuthConfig         `json:"auth,omitzero"`
+	AllowedExtensions            []string                  `json:"allowedExtensions,omitzero"`
+	DisableYoloMode              bool                      `json:"disableYoloMode,omitzero"`
+	EnablePermanentToolApproval  bool                      `json:"enablePermanentToolApproval,omitzero"`
+	BlockGitExtensions           bool                      `json:"blockGitExtensions,omitzero"`
 }
 
 type GeminiFolderTrustConfig struct {
@@ -400,10 +400,10 @@ type GeminiAuthConfig struct {
 }
 
 type GeminiAdvancedConfig struct {
-	AutoConfigureMemory bool           `json:"autoConfigureMemory,omitzero"`
+	BugCommand          map[string]any `json:"bugCommand,omitzero"`
 	DNSResolutionOrder  string         `json:"dnsResolutionOrder,omitzero"`
 	ExcludedEnvVars     []string       `json:"excludedEnvVars,omitzero"`
-	BugCommand          map[string]any `json:"bugCommand,omitzero"`
+	AutoConfigureMemory bool           `json:"autoConfigureMemory,omitzero"`
 }
 
 type GeminiExperimentalConfig struct {
@@ -419,20 +419,20 @@ type GeminiExperimentalConfig struct {
 }
 
 type GeminiToolOutputMaskingConfig struct {
-	Enabled                    bool `json:"enabled,omitzero"`
 	ToolProtectionThreshold    int  `json:"toolProtectionThreshold,omitzero"`
 	MinPrunableTokensThreshold int  `json:"minPrunableTokensThreshold,omitzero"`
+	Enabled                    bool `json:"enabled,omitzero"`
 	ProtectLatestTurn          bool `json:"protectLatestTurn,omitzero"`
 }
 
 type GeminiSkillsConfig struct {
-	Enabled  bool     `json:"enabled,omitzero"`
 	Disabled []string `json:"disabled,omitzero"`
+	Enabled  bool     `json:"enabled,omitzero"`
 }
 
 type GeminiHooksConfigConfig struct {
-	Enabled       bool     `json:"enabled,omitzero"`
 	Disabled      []string `json:"disabled,omitzero"`
+	Enabled       bool     `json:"enabled,omitzero"`
 	Notifications bool     `json:"notifications,omitzero"`
 }
 
@@ -451,10 +451,10 @@ type GeminiHooksConfig struct {
 }
 
 type GeminiAdminConfig struct {
-	SecureModeEnabled bool                     `json:"secureModeEnabled,omitzero"`
 	Extensions        *GeminiAdminExtConfig    `json:"extensions,omitzero"`
 	MCP               *GeminiAdminMCPConfig    `json:"mcp,omitzero"`
 	Skills            *GeminiAdminSkillsConfig `json:"skills,omitzero"`
+	SecureModeEnabled bool                     `json:"secureModeEnabled,omitzero"`
 }
 
 type GeminiAdminExtConfig struct {
@@ -462,8 +462,8 @@ type GeminiAdminExtConfig struct {
 }
 
 type GeminiAdminMCPConfig struct {
-	Enabled bool           `json:"enabled,omitzero"`
 	Config  map[string]any `json:"config,omitzero"`
+	Enabled bool           `json:"enabled,omitzero"`
 }
 
 type GeminiAdminSkillsConfig struct {
@@ -471,26 +471,26 @@ type GeminiAdminSkillsConfig struct {
 }
 
 type GeminiMCPServer struct {
-	Command      string            `json:"command,omitzero"`
-	Args         []string          `json:"args,omitzero"`
 	Env          map[string]string `json:"env,omitzero"`
+	Headers      map[string]string `json:"headers,omitzero"`
+	Command      string            `json:"command,omitzero"`
 	Cwd          string            `json:"cwd,omitzero"`
 	URL          string            `json:"url,omitzero"`
 	HTTPURL      string            `json:"httpUrl,omitzero"`
-	Headers      map[string]string `json:"headers,omitzero"`
-	Timeout      int               `json:"timeout,omitzero"`
-	Trust        bool              `json:"trust,omitzero"`
 	Description  string            `json:"description,omitzero"`
+	Args         []string          `json:"args,omitzero"`
 	IncludeTools []string          `json:"includeTools,omitzero"`
 	ExcludeTools []string          `json:"excludeTools,omitzero"`
+	Timeout      int               `json:"timeout,omitzero"`
+	Trust        bool              `json:"trust,omitzero"`
 }
 
 type GeminiTelemetryConfig struct {
-	Enabled      bool   `json:"enabled,omitzero"`
 	Target       string `json:"target,omitzero"`
 	OTLPEndpoint string `json:"otlpEndpoint,omitzero"`
 	OTLPProtocol string `json:"otlpProtocol,omitzero"`
-	LogPrompts   bool   `json:"logPrompts,omitzero"`
 	Outfile      string `json:"outfile,omitzero"`
+	Enabled      bool   `json:"enabled,omitzero"`
+	LogPrompts   bool   `json:"logPrompts,omitzero"`
 	UseCollector bool   `json:"useCollector,omitzero"`
 }

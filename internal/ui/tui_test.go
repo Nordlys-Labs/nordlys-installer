@@ -105,13 +105,16 @@ func TestModel_Update_ToolSelect(t *testing.T) {
 			m := NewModel()
 			m.state = StateToolSelect
 
-			msg := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune(tt.key)}
-			if tt.key == "ctrl+c" {
+			var msg tea.KeyMsg
+			switch tt.key {
+			case "ctrl+c":
 				msg = tea.KeyMsg{Type: tea.KeyCtrlC}
-			} else if tt.key == "up" {
+			case "up":
 				msg = tea.KeyMsg{Type: tea.KeyUp}
-			} else if tt.key == "down" {
+			case "down":
 				msg = tea.KeyMsg{Type: tea.KeyDown}
+			default:
+				msg = tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune(tt.key)}
 			}
 
 			newModel, _ := m.Update(msg)
@@ -184,7 +187,10 @@ func TestModel_Update_InstallMsg(t *testing.T) {
 	successMsg := installMsg{tool: "claude-code", err: nil}
 	newModel, _ := m.Update(successMsg)
 
-	updatedModel := newModel.(Model)
+	updatedModel, ok := newModel.(Model)
+	if !ok {
+		t.Fatalf("Update should return Model, got %T", newModel)
+	}
 	if len(updatedModel.installedDone) != 1 {
 		t.Error("successful install should add tool to installedDone")
 	}
@@ -195,7 +201,10 @@ func TestModel_Update_InstallMsg(t *testing.T) {
 	errorMsg := installMsg{tool: "claude-code", err: errTestError}
 	newModel2, _ := m2.Update(errorMsg)
 
-	updatedModel2 := newModel2.(Model)
+	updatedModel2, ok := newModel2.(Model)
+	if !ok {
+		t.Fatalf("Update should return Model, got %T", newModel2)
+	}
 	if updatedModel2.state != StateError {
 		t.Error("failed install should set state to StateError")
 	}
@@ -205,17 +214,17 @@ func TestStyles(t *testing.T) {
 	t.Parallel()
 
 	styles := []struct {
-		name  string
 		style interface{}
+		name  string
 	}{
-		{"TitleStyle", TitleStyle},
-		{"SelectedStyle", SelectedStyle},
-		{"UnselectedStyle", UnselectedStyle},
-		{"ErrorStyle", ErrorStyle},
-		{"SuccessStyle", SuccessStyle},
-		{"InfoStyle", InfoStyle},
-		{"PromptStyle", PromptStyle},
-		{"BorderStyle", BorderStyle},
+		{TitleStyle, "TitleStyle"},
+		{SelectedStyle, "SelectedStyle"},
+		{UnselectedStyle, "UnselectedStyle"},
+		{ErrorStyle, "ErrorStyle"},
+		{SuccessStyle, "SuccessStyle"},
+		{InfoStyle, "InfoStyle"},
+		{PromptStyle, "PromptStyle"},
+		{BorderStyle, "BorderStyle"},
 	}
 
 	for _, tt := range styles {
@@ -307,7 +316,10 @@ func TestUpdateToolSelect_Navigation(t *testing.T) {
 
 	upMsg := tea.KeyMsg{Type: tea.KeyUp}
 	newModel, _ := m.Update(upMsg)
-	updatedModel := newModel.(Model)
+	updatedModel, ok := newModel.(Model)
+	if !ok {
+		t.Fatalf("Update should return Model, got %T", newModel)
+	}
 	if updatedModel.cursor != 2 {
 		t.Errorf("cursor after up = %d, want 2", updatedModel.cursor)
 	}
@@ -318,7 +330,10 @@ func TestUpdateToolSelect_Navigation(t *testing.T) {
 
 	upMsg2 := tea.KeyMsg{Type: tea.KeyUp}
 	newModel2, _ := m2.Update(upMsg2)
-	updatedModel2 := newModel2.(Model)
+	updatedModel2, ok := newModel2.(Model)
+	if !ok {
+		t.Fatalf("Update should return Model, got %T", newModel2)
+	}
 	if updatedModel2.cursor != 0 {
 		t.Errorf("cursor should not go below 0, got %d", updatedModel2.cursor)
 	}
@@ -329,7 +344,10 @@ func TestUpdateToolSelect_Navigation(t *testing.T) {
 
 	downMsg := tea.KeyMsg{Type: tea.KeyDown}
 	newModel3, _ := m3.Update(downMsg)
-	updatedModel3 := newModel3.(Model)
+	updatedModel3, ok := newModel3.(Model)
+	if !ok {
+		t.Fatalf("Update should return Model, got %T", newModel3)
+	}
 	if updatedModel3.cursor != 6 {
 		t.Errorf("cursor after down = %d, want 6", updatedModel3.cursor)
 	}
@@ -340,7 +358,10 @@ func TestUpdateToolSelect_Navigation(t *testing.T) {
 
 	downMsg2 := tea.KeyMsg{Type: tea.KeyDown}
 	newModel4, _ := m4.Update(downMsg2)
-	updatedModel4 := newModel4.(Model)
+	updatedModel4, ok := newModel4.(Model)
+	if !ok {
+		t.Fatalf("Update should return Model, got %T", newModel4)
+	}
 	if updatedModel4.cursor != len(m4.tools)-1 {
 		t.Errorf("cursor should not exceed max, got %d", updatedModel4.cursor)
 	}
@@ -355,14 +376,20 @@ func TestUpdateToolSelect_Selection(t *testing.T) {
 
 	spaceMsg := tea.KeyMsg{Type: tea.KeySpace}
 	newModel, _ := m.Update(spaceMsg)
-	updatedModel := newModel.(Model)
+	updatedModel, ok := newModel.(Model)
+	if !ok {
+		t.Fatalf("Update should return Model, got %T", newModel)
+	}
 
 	if !updatedModel.selected[2] {
 		t.Error("space should toggle selection on")
 	}
 
 	newModel2, _ := updatedModel.Update(spaceMsg)
-	updatedModel2 := newModel2.(Model)
+	updatedModel2, ok := newModel2.(Model)
+	if !ok {
+		t.Fatalf("Update should return Model, got %T", newModel2)
+	}
 
 	if updatedModel2.selected[2] {
 		t.Error("space should toggle selection off")
@@ -377,7 +404,10 @@ func TestUpdateToolSelect_Enter(t *testing.T) {
 
 	enterMsg := tea.KeyMsg{Type: tea.KeyEnter}
 	newModel, _ := m.Update(enterMsg)
-	updatedModel := newModel.(Model)
+	updatedModel, ok := newModel.(Model)
+	if !ok {
+		t.Fatalf("Update should return Model, got %T", newModel)
+	}
 
 	if updatedModel.state != StateToolSelect {
 		t.Error("enter with no selection should stay in StateToolSelect")
@@ -388,7 +418,10 @@ func TestUpdateToolSelect_Enter(t *testing.T) {
 	m2.selected[0] = true
 
 	newModel2, _ := m2.Update(enterMsg)
-	updatedModel2 := newModel2.(Model)
+	updatedModel2, ok := newModel2.(Model)
+	if !ok {
+		t.Fatalf("Update should return Model, got %T", newModel2)
+	}
 
 	if updatedModel2.state != StateAPIKeyInput {
 		t.Errorf("enter with selection should go to StateAPIKeyInput, got %v", updatedModel2.state)

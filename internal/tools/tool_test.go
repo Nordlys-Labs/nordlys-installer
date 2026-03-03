@@ -53,7 +53,9 @@ func TestAllTools_ValidateNoConfig(t *testing.T) {
 	for _, tool := range tools {
 		t.Run(tool.Name(), func(t *testing.T) {
 			t.Parallel()
-			_ = tool.Validate()
+			if err := tool.Validate(); err != nil {
+				t.Logf("Validate (expected with no config): %v", err)
+			}
 		})
 	}
 }
@@ -75,7 +77,9 @@ func TestAllTools_UninstallNoConfig(t *testing.T) {
 	for _, tool := range tools {
 		t.Run(tool.Name(), func(t *testing.T) {
 			t.Parallel()
-			_ = tool.Uninstall()
+			if err := tool.Uninstall(); err != nil {
+				t.Logf("Uninstall (expected with no config): %v", err)
+			}
 		})
 	}
 }

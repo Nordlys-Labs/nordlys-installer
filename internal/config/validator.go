@@ -44,7 +44,7 @@ func ValidateAPIConnection(apiKey string) error {
 
 	req.Header.Set("Authorization", "Bearer "+apiKey)
 
-	resp, err := client.Do(req)
+	resp, err := client.Do(req) // #nosec G704 -- intentional API validation request to our configured endpoint
 	if err != nil {
 		return fmt.Errorf("failed to connect to API: %w", err)
 	}

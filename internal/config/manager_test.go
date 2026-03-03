@@ -10,15 +10,15 @@ func TestReadJSONFile(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name      string
 		setup     func(string) error
+		name      string
 		wantErr   bool
 		wantEmpty bool
 	}{
 		{
 			name: "existing valid JSON",
 			setup: func(path string) error {
-				return os.WriteFile(path, []byte(`{"key": "value"}`), 0o644)
+				return os.WriteFile(path, []byte(`{"key": "value"}`), 0o600)
 			},
 			wantErr:   false,
 			wantEmpty: false,
@@ -34,7 +34,7 @@ func TestReadJSONFile(t *testing.T) {
 		{
 			name: "invalid JSON",
 			setup: func(path string) error {
-				return os.WriteFile(path, []byte(`{invalid}`), 0o644)
+				return os.WriteFile(path, []byte(`{invalid}`), 0o600)
 			},
 			wantErr: true,
 		},
@@ -73,8 +73,8 @@ func TestWriteJSONFile(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name    string
 		data    map[string]any
+		name    string
 		wantErr bool
 	}{
 		{
@@ -173,9 +173,9 @@ func TestUpdateJSONFields(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name     string
 		existing map[string]any
 		updates  map[string]any
+		name     string
 		wantErr  bool
 	}{
 		{
@@ -239,14 +239,14 @@ func TestFileExists(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name     string
 		setup    func(string) error
+		name     string
 		wantTrue bool
 	}{
 		{
 			name: "file exists",
 			setup: func(path string) error {
-				return os.WriteFile(path, []byte("test"), 0o644)
+				return os.WriteFile(path, []byte("test"), 0o600)
 			},
 			wantTrue: true,
 		},

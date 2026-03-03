@@ -14,22 +14,22 @@ func TestValidateAPIKey(t *testing.T) {
 	}{
 		{
 			name:    "valid API key",
-			apiKey:  "sk-1234567890abcdefghij",
+			apiKey:  "sk-1234567890abcdefghij", // #nosec G101 -- test fixture, not a real credential
 			wantErr: false,
 		},
 		{
 			name:    "valid with underscores",
-			apiKey:  "key_with_underscores_1234567890",
+			apiKey:  "key_with_underscores_1234567890", // #nosec G101 -- test fixture
 			wantErr: false,
 		},
 		{
 			name:    "valid with dashes",
-			apiKey:  "key-with-dashes-1234567890",
+			apiKey:  "key-with-dashes-1234567890", // #nosec G101 -- test fixture
 			wantErr: false,
 		},
 		{
 			name:    "valid with dots",
-			apiKey:  "key.with.dots.1234567890",
+			apiKey:  "key.with.dots.1234567890", // #nosec G101 -- test fixture
 			wantErr: false,
 		},
 		{

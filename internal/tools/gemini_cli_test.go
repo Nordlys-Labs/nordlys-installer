@@ -74,7 +74,10 @@ func TestGeminiCLI_UpdateConfig(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	path, _ := g.ConfigPath()
+	path, err := g.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 	data, err := config.ReadJSONFile(path)
 	if err != nil {
 		t.Fatalf("ReadJSONFile() error = %v", err)
@@ -112,7 +115,7 @@ func TestGeminiCLI_Validate(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	if err := g.Validate(); err != nil {
+	if err = g.Validate(); err != nil {
 		t.Errorf("Validate() should accept valid key, got error: %v", err)
 	}
 
@@ -122,7 +125,7 @@ func TestGeminiCLI_Validate(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	if err := g.Validate(); err == nil {
+	if err = g.Validate(); err == nil {
 		t.Error("Validate() should reject invalid key")
 	}
 }
@@ -132,7 +135,10 @@ func TestGeminiCLI_Uninstall(t *testing.T) {
 
 	tmpDir := t.TempDir()
 	g := NewGeminiCLI(tmpDir)
-	configPath, _ := g.ConfigPath()
+	configPath, err := g.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 
 	initialData := map[string]any{
 		"model": map[string]any{
@@ -148,17 +154,17 @@ func TestGeminiCLI_Uninstall(t *testing.T) {
 		},
 		"userSetting": "keep-this",
 	}
-	if err := config.WriteJSONFile(configPath, initialData); err != nil {
+	if err = config.WriteJSONFile(configPath, initialData); err != nil {
 		t.Fatalf("setup WriteJSONFile() error = %v", err)
 	}
 
 	// Create .env file to test removal
 	envPath := filepath.Join(tmpDir, ".env")
-	if err := os.WriteFile(envPath, []byte("GEMINI_API_KEY=test\n"), 0o600); err != nil {
+	if err = os.WriteFile(envPath, []byte("GEMINI_API_KEY=test\n"), 0o600); err != nil {
 		t.Fatalf("setup WriteFile(.env) error = %v", err)
 	}
 
-	if err := g.Uninstall(); err != nil {
+	if err = g.Uninstall(); err != nil {
 		t.Fatalf("Uninstall() error = %v", err)
 	}
 
@@ -200,12 +206,16 @@ func TestGeminiCLI_FullWorkflow(t *testing.T) {
 	baseURL := "https://api.nordlys.ai"
 
 	// Install
-	if err := g.UpdateConfig(apiKey, model, baseURL); err != nil {
+	err := g.UpdateConfig(apiKey, model, baseURL)
+	if err != nil {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
 	// Verify config structure
-	configPath, _ := g.ConfigPath()
+	configPath, err := g.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 	data, err := config.ReadJSONFile(configPath)
 	if err != nil {
 		t.Fatalf("ReadJSONFile() error = %v", err)
@@ -221,19 +231,22 @@ func TestGeminiCLI_FullWorkflow(t *testing.T) {
 
 	// Verify .env file
 	envPath := filepath.Join(tmpDir, ".env")
-	envBytes, _ := os.ReadFile(envPath)
+	envBytes, err := os.ReadFile(envPath)
+	if err != nil {
+		t.Fatalf("ReadFile(.env) error = %v", err)
+	}
 	envContent := string(envBytes)
 	if !strings.Contains(envContent, "GEMINI_API_KEY="+apiKey) {
 		t.Errorf(".env missing GEMINI_API_KEY")
 	}
 
 	// Validate
-	if err := g.Validate(); err != nil {
+	if err = g.Validate(); err != nil {
 		t.Errorf("Validate() error = %v", err)
 	}
 
 	// Uninstall
-	if err := g.Uninstall(); err != nil {
+	if err = g.Uninstall(); err != nil {
 		t.Fatalf("Uninstall() error = %v", err)
 	}
 

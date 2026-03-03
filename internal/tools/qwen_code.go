@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -148,9 +149,11 @@ func (q *QwenCode) Uninstall() error {
 	delete(data, "modelProviders")
 	delete(data, "security")
 
-	// Remove .env file
+	// Remove .env file (ignore if not exists)
 	envPath := filepath.Join(filepath.Dir(path), ".env")
-	_ = os.Remove(envPath)
+	if err := os.Remove(envPath); err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("remove env file: %w", err)
+	}
 
 	return config.WriteJSONFile(path, data)
 }

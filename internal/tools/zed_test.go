@@ -66,16 +66,19 @@ func TestZed_UpdateConfig(t *testing.T) {
 
 	tmpDir := t.TempDir()
 	z := NewZed(tmpDir)
-	configPath, _ := z.ConfigPath()
+	configPath, err := z.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 
 	existingData := map[string]any{
 		"userSetting": "keep-this",
 	}
-	if err := config.WriteJSONFile(configPath, existingData); err != nil {
+	if err = config.WriteJSONFile(configPath, existingData); err != nil {
 		t.Fatalf("setup WriteJSONFile() error = %v", err)
 	}
 
-	err := z.UpdateConfig("test-api-key", "nordlys/hypernova", "https://api.test.com/v1")
+	err = z.UpdateConfig("test-api-key", "nordlys/hypernova", "https://api.test.com/v1")
 	if err != nil {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
@@ -124,7 +127,7 @@ func TestZed_Validate(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	if err := z.Validate(); err != nil {
+	if err = z.Validate(); err != nil {
 		t.Errorf("Validate() should accept valid key, got error: %v", err)
 	}
 
@@ -133,7 +136,7 @@ func TestZed_Validate(t *testing.T) {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
-	if err := z.Validate(); err == nil {
+	if err = z.Validate(); err == nil {
 		t.Error("Validate() should reject invalid key")
 	}
 }
@@ -143,7 +146,10 @@ func TestZed_Uninstall(t *testing.T) {
 
 	tmpDir := t.TempDir()
 	z := NewZed(tmpDir)
-	configPath, _ := z.ConfigPath()
+	configPath, err := z.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 
 	initialData := map[string]any{
 		"language_models": map[string]any{
@@ -162,11 +168,11 @@ func TestZed_Uninstall(t *testing.T) {
 		},
 		"userSetting": "keep-this",
 	}
-	if err := config.WriteJSONFile(configPath, initialData); err != nil {
+	if err = config.WriteJSONFile(configPath, initialData); err != nil {
 		t.Fatalf("setup WriteJSONFile() error = %v", err)
 	}
 
-	if err := z.Uninstall(); err != nil {
+	if err = z.Uninstall(); err != nil {
 		t.Fatalf("Uninstall() error = %v", err)
 	}
 
@@ -202,7 +208,10 @@ func TestZed_FullWorkflow(t *testing.T) {
 
 	tmpDir := t.TempDir()
 	z := NewZed(tmpDir)
-	configPath, _ := z.ConfigPath()
+	configPath, err := z.ConfigPath()
+	if err != nil {
+		t.Fatalf("ConfigPath() error = %v", err)
+	}
 
 	// Create existing config with user settings
 	existingConfig := map[string]any{
@@ -211,7 +220,7 @@ func TestZed_FullWorkflow(t *testing.T) {
 			"OTHER_VAR": "keep-this",
 		},
 	}
-	if err := config.WriteJSONFile(configPath, existingConfig); err != nil {
+	if err = config.WriteJSONFile(configPath, existingConfig); err != nil {
 		t.Fatalf("setup WriteJSONFile() error = %v", err)
 	}
 
@@ -220,7 +229,7 @@ func TestZed_FullWorkflow(t *testing.T) {
 	baseURL := "https://api.nordlys.ai/v1"
 
 	// Install
-	if err := z.UpdateConfig(apiKey, model, baseURL); err != nil {
+	if err = z.UpdateConfig(apiKey, model, baseURL); err != nil {
 		t.Fatalf("UpdateConfig() error = %v", err)
 	}
 
@@ -266,12 +275,12 @@ func TestZed_FullWorkflow(t *testing.T) {
 	}
 
 	// Validate
-	if err := z.Validate(); err != nil {
+	if err = z.Validate(); err != nil {
 		t.Errorf("Validate() error = %v", err)
 	}
 
 	// Uninstall
-	if err := z.Uninstall(); err != nil {
+	if err = z.Uninstall(); err != nil {
 		t.Fatalf("Uninstall() error = %v", err)
 	}
 
